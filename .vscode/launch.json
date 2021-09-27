@@ -6,8 +6,12 @@
     "configurations": [
         {
             "name": "flutter_barber_booking_app",
+            "program": "lib/main.dart",
             "request": "launch",
-            "type": "dart"
+            "type": "dart",
+            "args": [
+                "--no-sound-null-safety"
+            ]
         },
         {
             "name": "flutter_barber_booking_app (profile mode)",
