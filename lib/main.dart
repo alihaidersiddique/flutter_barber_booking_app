@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:page_transition/page_transition.dart';
-
 import 'package:flutter_barber_booking_app/screens/home_screen.dart';
 import 'package:flutter_barber_booking_app/state/state_management.dart';
 import 'package:flutter_barber_booking_app/utils/utils.dart';
@@ -17,7 +16,7 @@ import 'package:rflutter_alert/rflutter_alert.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Firebase.initializeApp();
+  await Firebase.initializeApp(); // fix login null
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -26,7 +25,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/home':
@@ -133,8 +131,6 @@ class MyHomePage extends ConsumerWidget {
                 FirebaseAuth.instance.currentUser!
                     .getIdToken()
                     .then((token) async {
-                  // if get token then print it
-                  print(token);
                   context.read(userToken).state = token;
                   // check user in firestore
                   CollectionReference userRef =
