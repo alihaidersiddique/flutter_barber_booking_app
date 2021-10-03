@@ -80,19 +80,22 @@ class HomePage extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                        child: Container(
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(5),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.book_online, size: 50),
-                              Text(
-                                'Booking',
-                                style: GoogleFonts.robotoMono(),
-                              )
-                            ],
+                        child: GestureDetector(
+                      onTap: () => Navigator.pushNamed(context, '/booking'),
+                      child: Container(
+                        child: Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.book_online, size: 50),
+                                Text(
+                                  'Booking',
+                                  style: GoogleFonts.robotoMono(),
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),

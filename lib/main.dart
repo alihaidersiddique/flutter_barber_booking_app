@@ -14,6 +14,8 @@ import 'package:flutter_barber_booking_app/state/state_management.dart';
 import 'package:flutter_barber_booking_app/utils/utils.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 
+import 'screens/booking_screen.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(); // fix login null
@@ -31,6 +33,12 @@ class MyApp extends StatelessWidget {
             return PageTransition(
               settings: settings,
               child: HomePage(),
+              type: PageTransitionType.fade,
+            );
+          case '/booking':
+            return PageTransition(
+              settings: settings,
+              child: BookingScreen(),
               type: PageTransitionType.fade,
             );
           default:
