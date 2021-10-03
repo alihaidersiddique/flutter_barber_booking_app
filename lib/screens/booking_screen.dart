@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_barber_booking_app/cloud_firestore/all_salon_ref.dart';
+import 'package:flutter_barber_booking_app/models/city_model.dart';
 import 'package:flutter_barber_booking_app/state/state_management.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:im_stepper/stepper.dart';
 
 class BookingScreen extends ConsumerWidget {
@@ -17,6 +19,7 @@ class BookingScreen extends ConsumerWidget {
         resizeToAvoidBottomInset: true,
         body: Column(
           children: [
+            // Stepper
             NumberStepper(
               numbers: [1, 2, 3, 4, 5],
               stepColor: Colors.black,
@@ -27,6 +30,8 @@ class BookingScreen extends ConsumerWidget {
               enableStepTapping: false,
               direction: Axis.horizontal,
             ),
+            // Screen
+            Expanded(child: step == 1 ? displayCityList() : Container()),
             // Buttons
             Expanded(
                 child: Align(
@@ -47,9 +52,11 @@ class BookingScreen extends ConsumerWidget {
                     SizedBox(width: 30),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: step == 5
+                        onPressed: context.read(selectedCity).state == ''
                             ? null
-                            : () => context.read(currentStep).state++,
+                            : step == 5
+                                ? null
+                                : () => context.read(currentStep).state++,
                         child: Text('NEXT'),
                       ),
                     ),
@@ -60,6 +67,44 @@ class BookingScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+
+  displayCityList() {
+    return FutureBuilder(
+      future: getCities(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        } else {
+          var cities = snapshot.data as List<CityModel>;
+          if (cities.length == 0)
+            return Center(child: Text('Cannot load city list'));
+          else
+            return ListView.builder(
+              itemCount: cities.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () =>
+                      context.read(selectedCity).state = cities[index].name,
+                  child: Card(
+                    child: ListTile(
+                      title: Text(
+                        '${cities[index].name}',
+                        style: GoogleFonts.robotoMono(),
+                      ),
+                      leading: Icon(Icons.home_work, color: Colors.black),
+                      trailing:
+                          context.read(selectedCity).state == cities[index].name
+                              ? Icon(Icons.check)
+                              : null,
+                    ),
+                  ),
+                );
+              },
+            );
+        }
+      },
     );
   }
 }
