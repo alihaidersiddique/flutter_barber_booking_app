@@ -1,7 +1,11 @@
-class SalonModel {
-  String name = '', address = '';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  SalonModel({required this.name, required this.address});
+class SalonModel {
+  String? name = '', address = '', docId = '';
+
+  DocumentReference? reference;
+
+  SalonModel({this.name, this.address});
 
   SalonModel.fromJson(Map<String, dynamic> map) {
     name = map['name'];
