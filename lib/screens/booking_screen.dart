@@ -5,10 +5,12 @@ import 'package:flutter_barber_booking_app/models/barber_model.dart';
 import 'package:flutter_barber_booking_app/models/city_model.dart';
 import 'package:flutter_barber_booking_app/models/salon_model.dart';
 import 'package:flutter_barber_booking_app/state/state_management.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:im_stepper/stepper.dart';
+import 'package:intl/intl.dart';
 
 class BookingScreen extends ConsumerWidget {
   @override
@@ -17,6 +19,7 @@ class BookingScreen extends ConsumerWidget {
     var cityWatch = watch(selectedCity).state;
     var salonWatch = watch(selectedSalon).state;
     var barberWatch = watch(selectedBarber).state;
+    var dateWatch = watch(selectedDate).state;
 
     return SafeArea(
       child: Scaffold(
@@ -43,7 +46,9 @@ class BookingScreen extends ConsumerWidget {
                       ? displaySalon(cityWatch.name!)
                       : step == 3
                           ? displayBarber(salonWatch)
-                          : Container(),
+                          : step == 4
+                              ? displayTimeSlot(context, barberWatch)
+                              : Container(),
             ),
             // Buttons
             Expanded(
@@ -67,13 +72,15 @@ class BookingScreen extends ConsumerWidget {
                       child: ElevatedButton(
                         onPressed: (step == 1 &&
                                     context.read(selectedCity).state.name ==
-                                        '') ||
+                                        null) ||
                                 (step == 2 &&
                                     context.read(selectedSalon).state.docId ==
                                         '') ||
                                 (step == 3 &&
                                     context.read(selectedBarber).state.docId ==
-                                        '')
+                                        '') ||
+                                (step == 4 &&
+                                    context.read(selectedTimeSlot).state == -1)
                             ? null
                             : step == 5
                                 ? null
@@ -205,7 +212,7 @@ class BookingScreen extends ConsumerWidget {
                           color: Colors.amber,
                         ),
                         itemPadding: const EdgeInsets.all(4),
-                        onRatingUpdate: (double value) {},
+                        onRatingUpdate: (value) {},
                       ),
                       leading: Icon(Icons.person, color: Colors.black),
                       trailing: context.read(selectedBarber).state.docId ==
@@ -221,4 +228,67 @@ class BookingScreen extends ConsumerWidget {
       },
     );
   }
+
+  displayTimeSlot(BuildContext context, BarberModel barberModel) {
+    var now = context.read(selectedDate).state;
+
+    return Column(
+      children: [
+        Container(
+          color: Color(0xFF008577),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(22),
+                    child: Column(
+                      children: [
+                        Text(
+                          '${DateFormat.MMMM().format(now)}',
+                          style: GoogleFonts.robotoMono(color: Colors.white54),
+                        ),
+                        Text(
+                          '${now.day}',
+                          style: GoogleFonts.robotoMono(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22,
+                            color: Colors.white,
+                          ),
+                        ),
+                        Text(
+                          '${DateFormat.EEEE().format(now)}',
+                          style: GoogleFonts.robotoMono(color: Colors.white54),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  DatePicker.showDatePicker(
+                    context,
+                    showTitleActions: true,
+                    minTime: now,
+                    maxTime: now.add(Duration(days: 31)),
+                    onConfirm: (date) =>
+                        context.read(selectedDate).state = date,
+                  );
+                },
+                child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(Icons.calendar_today, color: Colors.white),
+                    )),
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+//
 }
